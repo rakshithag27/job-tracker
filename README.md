@@ -12,6 +12,7 @@ A RESTful API built with Spring Boot that helps you track job applications, inte
 - **Spring Data JPA + Hibernate**
 - **MySQL 8.0**
 - **Docker**
+- **Docker Compose**
 - **Maven**
 
 ---
@@ -72,7 +73,7 @@ src/main/java/com/rakshitha/jobtracker
 
 1. Clone the repository
 ```bash
-git clone https://github.com/rakshithagreddy/job-tracker.git
+git clone https://github.com/rakshithag27/job-tracker.git
 cd job-tracker
 ```
 
@@ -97,7 +98,48 @@ App runs on `http://localhost:8080`
 
 ---
 
-## Running with Docker
+## Running with Docker Compose (Recommended)
+
+The easiest way to run the full stack — no local MySQL installation needed. Docker Compose spins up both the Spring Boot app and MySQL in separate containers and connects them automatically.
+
+### Prerequisites
+- Docker Desktop
+
+### Steps
+
+1. Build the jar
+```bash
+mvn clean package -DskipTests
+```
+
+2. Start everything
+```bash
+docker-compose up --build
+```
+
+That's it. Docker Compose will:
+- Pull the MySQL 8.0 image
+- Create the `jobtracker` database automatically
+- Build the Spring Boot app image
+- Wait for MySQL to be healthy before starting the app
+- Connect both containers on a private network
+
+App runs on `http://localhost:8080`  
+MySQL is accessible on `localhost:3307` from your machine (e.g. MySQL Workbench)
+
+3. To stop everything
+```bash
+docker-compose down
+```
+
+To stop and delete all data:
+```bash
+docker-compose down -v
+```
+
+---
+
+## Running with Docker only
 
 1. Build the jar
 ```bash
@@ -114,6 +156,8 @@ docker build -t job-tracker .
 docker run -p 8080:8080 job-tracker
 ```
 
+Note: this requires a MySQL instance running and accessible from the container.
+
 ---
 
 ## Authentication
@@ -128,7 +172,7 @@ Get the token from the `/api/auth/login` response and include it in every subseq
 
 ---
 
-## Sample Request
+## Sample Requests
 
 **Signup**
 ```json
@@ -140,9 +184,20 @@ POST /api/auth/signup
 }
 ```
 
+**Login**
+```json
+POST /api/auth/login
+{
+    "email": "user@example.com",
+    "password": "yourpassword"
+}
+```
+
 **Add a Job Application**
 ```json
 POST /api/jobs
+Authorization: Bearer <token>
+
 {
     "companyName": "Google",
     "role": "Software Developer II",
@@ -153,10 +208,24 @@ POST /api/jobs
 }
 ```
 
+**Update Application Status**
+```json
+PUT /api/jobs/1
+Authorization: Bearer <token>
+
+{
+    "companyName": "Google",
+    "role": "Software Developer II",
+    "jobUrl": "https://careers.google.com",
+    "appliedDate": "2026-03-11",
+    "status": "INTERVIEW",
+    "notes": "Got interview scheduled for next week"
+}
+```
+
 ---
 
 ## Upcoming
 
 - [ ] AWS deployment (EC2 + RDS)
-- [ ] Docker Compose for local multi-container setup
 - [ ] Swagger UI for API documentation

@@ -1,6 +1,9 @@
 # Job Application Tracker API
 
-A RESTful API built with Spring Boot that helps you track job applications, interviews, and outcomes. Built as a personal project to demonstrate backend development, JWT authentication, and containerization with Docker.
+A RESTful API built with Spring Boot that helps you track job applications, interviews, and outcomes. Built as a personal project to demonstrate backend development, JWT authentication, containerization with Docker, and cloud deployment on AWS EC2.
+
+🌍 **Live on AWS:** `http://100.54.148.175:8080`
+📖 **Swagger UI:** `http://100.54.148.175:8080/swagger-ui/index.html`
 
 ---
 
@@ -13,6 +16,8 @@ A RESTful API built with Spring Boot that helps you track job applications, inte
 - **MySQL 8.0**
 - **Docker**
 - **Docker Compose**
+- **AWS EC2**
+- **Swagger / OpenAPI 3.0**
 - **Maven**
 
 ---
@@ -25,6 +30,9 @@ A RESTful API built with Spring Boot that helps you track job applications, inte
 - Track application status: `APPLIED`, `ASSESSMENT`, `INTERVIEW`, `OFFER`, `REJECTED`, `GHOSTED`, `WITHDRAWN`
 - Each user can only access and modify their own data
 - Stateless REST API — no sessions
+- Auto-generated API documentation via Swagger UI
+- Fully containerized with Docker Compose
+- Deployed on AWS EC2
 
 ---
 
@@ -74,7 +82,7 @@ src/main/java/com/rakshitha/jobtracker
 1. Clone the repository
 ```bash
 git clone https://github.com/rakshithag27/job-tracker.git
-cd job-tracker
+cd job-tracker/job-tracker
 ```
 
 2. Create the database
@@ -95,6 +103,7 @@ mvn spring-boot:run
 ```
 
 App runs on `http://localhost:8080`
+Swagger UI at `http://localhost:8080/swagger-ui/index.html`
 
 ---
 
@@ -114,7 +123,7 @@ mvn clean package -DskipTests
 
 2. Start everything
 ```bash
-docker-compose up --build
+docker-compose up --build -d
 ```
 
 That's it. Docker Compose will:
@@ -124,8 +133,9 @@ That's it. Docker Compose will:
 - Wait for MySQL to be healthy before starting the app
 - Connect both containers on a private network
 
-App runs on `http://localhost:8080`  
-MySQL is accessible on `localhost:3307` from your machine (e.g. MySQL Workbench)
+App runs on `http://localhost:8080`
+Swagger UI at `http://localhost:8080/swagger-ui/index.html`
+MySQL accessible on `localhost:3307` from your machine
 
 3. To stop everything
 ```bash
@@ -139,24 +149,18 @@ docker-compose down -v
 
 ---
 
-## Running with Docker only
+## AWS Deployment
 
-1. Build the jar
-```bash
-mvn clean package -DskipTests
-```
+The app is deployed on AWS EC2 and accessible at:
+- API: `http://100.54.148.175:8080`
+- Swagger UI: `http://100.54.148.175:8080/swagger-ui/index.html`
 
-2. Build the Docker image
-```bash
-docker build -t job-tracker .
-```
-
-3. Run the container
-```bash
-docker run -p 8080:8080 job-tracker
-```
-
-Note: this requires a MySQL instance running and accessible from the container.
+### How it's deployed:
+1. EC2 instance running Amazon Linux 2023 (t3.micro — free tier)
+2. Docker and Docker Compose installed on the instance
+3. Code cloned from GitHub
+4. App built with Maven on the server
+5. `docker-compose up --build -d` starts both app and MySQL containers
 
 ---
 
@@ -202,7 +206,7 @@ Authorization: Bearer <token>
     "companyName": "Google",
     "role": "Software Developer II",
     "jobUrl": "https://careers.google.com",
-    "appliedDate": "2026-03-11",
+    "appliedDate": "2026-03-12",
     "status": "APPLIED",
     "notes": "Applied through referral"
 }
@@ -217,7 +221,7 @@ Authorization: Bearer <token>
     "companyName": "Google",
     "role": "Software Developer II",
     "jobUrl": "https://careers.google.com",
-    "appliedDate": "2026-03-11",
+    "appliedDate": "2026-03-12",
     "status": "INTERVIEW",
     "notes": "Got interview scheduled for next week"
 }
@@ -227,5 +231,6 @@ Authorization: Bearer <token>
 
 ## Upcoming
 
-- [ ] AWS deployment (EC2 + RDS)
-- [ ] Swagger UI for API documentation
+- [ ] GitHub Actions CI/CD pipeline
+- [ ] Swagger UI documentation enhancements
+- [ ] AI integration for job application insights
